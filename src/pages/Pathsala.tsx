@@ -1,69 +1,44 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Users, Clock, Star } from 'lucide-react';
+import { BookOpen, Users, Clock, Star, X } from 'lucide-react';
+import axios from 'axios';
+
+interface LevelData {
+  level: string;
+  title: string;
+  description: string;
+  ageGroup: string;
+  duration: string;
+  students: number;
+  topicsCovered: string;
+  keyActivities: string;
+  teachersNote: string;
+  learningOutcome: string;
+}
 
 const Pathsala: React.FC = () => {
-  const levels = [
-    {
-      level: "1",
-      title: 'Foundation Level',
-      description: 'Introduction to Jain principles and basic prayers',
-      ageGroup: '5-7 years',
-      duration: '1 hour',
-      students: 15
-    },
-    {
-      level: 2,
-      title: 'Elementary Level',
-      description: 'Stories of Tirthankaras and basic Jain history',
-      ageGroup: '8-9 years',
-      duration: '1.5 hours',
-      students: 18
-    },
-    {
-      level: 3,
-      title: 'Intermediate Level',
-      description: 'Understanding of Five Vratas and Jain philosophy',
-      ageGroup: '10-11 years',
-      duration: '1.5 hours',
-      students: 20
-    },
-    {
-      level: 4,
-      title: 'Advanced Basics',
-      description: 'Deeper study of Jain scriptures and practices',
-      ageGroup: '12-13 years',
-      duration: '2 hours',
-      students: 16
-    },
-    {
-      level: 5,
-      title: 'Philosophy Level',
-      description: 'Advanced Jain philosophy and ethical discussions',
-      ageGroup: '14-15 years',
-      duration: '2 hours',
-      students: 12
-    },
-    {
-      level: 6,
-      title: 'Leadership Level',
-      description: 'Training for community leadership and service',
-      ageGroup: '16-17 years',
-      duration: '2 hours',
-      students: 8
-    },
-    {
-      level: 7,
-      title: 'Advanced Studies',
-      description: 'In-depth scripture study and teaching preparation',
-      ageGroup: '18+ years',
-      duration: '2.5 hours',
-      students: 6
-    }
-  ];
+  const [levels, setLevels] = useState<LevelData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedLevel, setSelectedLevel] = useState<LevelData | null>(null);
+
+  useEffect(() => {
+    axios
+      .get('https://script.google.com/macros/s/AKfycbxGGp07f15g5nmWvEhKuYwXufkp0bfTKO40mDeiAbXoyFo83JyFNer3vK0_KKeNY7sUgA/exec') // Replace with your Web App URL
+      .then((res) => {
+        setLevels(res.data.levels || []);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Error fetching levels:', err);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <div className="pt-16 text-center">Loading Pathshala Levels...</div>;
 
   return (
     <div className="pt-16">
+      {/* === Hero Section === */}
       <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">Pathshala Program</h1>
@@ -73,20 +48,24 @@ const Pathsala: React.FC = () => {
         </div>
       </div>
 
+      {/* === About Section === */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">About Our Pathshala</h2>
             <p className="text-gray-600 max-w-3xl mx-auto">
-              Our Pathshala program is designed to provide comprehensive Jain education from 
-              childhood through young adulthood. Each level builds upon the previous, creating 
-              a strong foundation in Jain principles, philosophy, and practices.
+              Our Pathshala program is designed to provide comprehensive Jain education from childhood through young adulthood.
+              Each level builds upon the previous, creating a strong foundation in Jain principles, philosophy, and practices.
             </p>
           </div>
 
+          {/* === Levels Cards Section === */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
             {levels.map((level) => (
-              <div key={level.level} className="bg-white rounded-lg shadow-lg border border-orange-100 hover:shadow-xl transition-shadow">
+              <div
+                key={level.level}
+                className="bg-white rounded-lg shadow-lg border border-orange-100 hover:shadow-xl transition-shadow"
+              >
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-2xl font-bold text-orange-600">Level {level.level}</h3>
@@ -96,7 +75,7 @@ const Pathsala: React.FC = () => {
                   </div>
                   <h4 className="text-xl font-semibold text-gray-900 mb-3">{level.title}</h4>
                   <p className="text-gray-600 mb-4">{level.description}</p>
-                  
+
                   <div className="space-y-2 mb-6">
                     <div className="flex items-center text-sm text-gray-500">
                       <Clock className="h-4 w-4 mr-2" />
@@ -108,17 +87,18 @@ const Pathsala: React.FC = () => {
                     </div>
                   </div>
 
-                  <Link
-                    to={`/pathsala/level-${level.level}`}
+                  <button
+                    onClick={() => setSelectedLevel(level)}
                     className="w-full bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded-lg font-medium transition-colors text-center block"
                   >
                     View Details
-                  </Link>
+                  </button>
                 </div>
               </div>
             ))}
           </div>
 
+          {/* === Highlights Section === */}
           <div className="bg-orange-50 rounded-lg p-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="text-center">
@@ -153,6 +133,7 @@ const Pathsala: React.FC = () => {
         </div>
       </section>
 
+      {/* === Registration Section === */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -189,33 +170,21 @@ const Pathsala: React.FC = () => {
               <div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-6">How to Register</h3>
                 <div className="space-y-4">
-                  <div className="flex items-start">
-                    <div className="bg-orange-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm mr-3 mt-1">
-                      1
+                  {['Complete Application', 'Submit Payment', 'Receive Confirmation'].map((step, idx) => (
+                    <div key={idx} className="flex items-start">
+                      <div className="bg-orange-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm mr-3 mt-1">
+                        {idx + 1}
+                      </div>
+                      <div>
+                        <h4 className="font-medium mb-1">{step}</h4>
+                        <p className="text-gray-600 text-sm">
+                          {idx === 0 && 'Fill out the registration form with student details'}
+                          {idx === 1 && 'Pay the annual fee through our secure payment portal'}
+                          {idx === 2 && 'Get confirmation email with class details and materials list'}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-medium mb-1">Complete Application</h4>
-                      <p className="text-gray-600 text-sm">Fill out the registration form with student details</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="bg-orange-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm mr-3 mt-1">
-                      2
-                    </div>
-                    <div>
-                      <h4 className="font-medium mb-1">Submit Payment</h4>
-                      <p className="text-gray-600 text-sm">Pay the annual fee through our secure payment portal</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="bg-orange-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm mr-3 mt-1">
-                      3
-                    </div>
-                    <div>
-                      <h4 className="font-medium mb-1">Receive Confirmation</h4>
-                      <p className="text-gray-600 text-sm">Get confirmation email with class details and materials list</p>
-                    </div>
-                  </div>
+                  ))}
                 </div>
 
                 <div className="mt-6">
@@ -231,6 +200,39 @@ const Pathsala: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* === Modal === */}
+      {selectedLevel && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-8 w-11/12 md:w-3/4 lg:w-2/3 relative">
+            <button
+              onClick={() => setSelectedLevel(null)}
+              className="absolute top-4 right-4 text-gray-600 hover:text-gray-900"
+            >
+              <X className="h-6 w-6" />
+            </button>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{selectedLevel.title} — Details</h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[
+                { title: "Topics Covered", data: selectedLevel.topicsCovered },
+                { title: "Key Activities", data: selectedLevel.keyActivities },
+                { title: "Teacher's Note", data: selectedLevel.teachersNote },
+                { title: "Learning Outcome", data: selectedLevel.learningOutcome }
+              ].map((section, idx) => (
+                <div key={idx}>
+                  <h3 className="font-bold text-orange-600 mb-2">{section.title}</h3>
+                  <ul className="list-disc list-inside text-gray-700">
+                    {section.data.split(',').map((item, subIdx) => (
+                      <li key={subIdx}>{item.trim()}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
